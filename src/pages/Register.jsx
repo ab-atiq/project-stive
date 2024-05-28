@@ -3,10 +3,10 @@ import GoogleLogin from "../components/Login-Registration/GoogleLogin";
 import useAuth from "../hooks/useAuth";
 import { useEffect } from "react";
 
-const Login = () => {
-  const { signIn, user } = useAuth();
-  const navigate = useNavigate();
+const Register = () => {
+  const { createUser, user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const from = location?.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
@@ -14,19 +14,29 @@ const Login = () => {
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-   await signIn(email, password);
-  };
-  useEffect(()=>{
-    if(user){
-      navigate(from, {replace: true});
+    const confirmPassword = form.confirm_password.value;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
     }
-  },[user, from, navigate])
+
+    console.log(email, password, confirmPassword);
+    if (password === confirmPassword) {
+      await createUser(email, password);
+    }
+  };
+  useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, from, navigate]);
   return (
     <div>
       <div className="hero min-h-screen bg-base-200">
         <div className="hero-content flex-col lg:flex-row-reverse">
           <div className="text-center lg:text-left">
-            <h1 className="text-5xl font-bold">Login now!</h1>
+            <h1 className="text-5xl font-bold">Register now!</h1>
             <p className="py-6">
               Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
               excepturi exercitationem quasi. In deleniti eaque aut repudiandae
@@ -58,24 +68,28 @@ const Login = () => {
                   name="password"
                   required
                 />
+              </div>
+              <div className="form-control">
                 <label className="label">
-                  <a href="#" className="label-text-alt link link-hover">
-                    Forgot password?
-                  </a>
+                  <span className="label-text">Confirm Password</span>
                 </label>
+                <input
+                  type="password"
+                  placeholder="confirm password"
+                  className="input input-bordered"
+                  name="confirm_password"
+                  required
+                />
                 <label className="label">
-                  do not have an account?{" "}
-                  <a
-                    href="/register"
-                    className="label-text-alt link link-hover"
-                  >
-                    Register
+                  already have an account?{" "}
+                  <a href="/login" className="label-text-alt link link-hover">
+                    Login
                   </a>
                 </label>
               </div>
               <div className="form-control mt-6">
                 <button className="btn btn-primary" type="submit">
-                  Login
+                  Register
                 </button>
               </div>
             </form>
@@ -89,4 +103,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
